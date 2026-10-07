@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
     }
   },
   "files": [
@@ -26,6 +30,7 @@
     "@craftoria/contracts": "workspace:*",
     "express": "^5.2.1",
     "helmet": "^8.3.0",
+    "jose": "^6.2.12",
     "pino": "^10.4.0",
     "pino-http": "^11.0.0",
     "prom-client": "^15.1.3",
