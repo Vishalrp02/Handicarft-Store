@@ -211,7 +211,7 @@ pending ──(order cancelled)──▶ cancelled
 
 | Item | Choice | Cost |
 |---|---|---|
-| Compute | Oracle Cloud **Always Free Ampere A1** (arm64): `prod` VM 3 OCPU / 18 GB, `staging` VM 1 OCPU / 6 GB, Ubuntu 24.04 | ₹0 ¹ |
+| Compute | Oracle Cloud **Always Free Ampere A1** (arm64), Ubuntu 24.04: `dev` VM 2 OCPU / 12 GB (development + staging, decision D-7) and `prod` VM 2 OCPU / 12 GB | ₹0 ¹ |
 | Ingress | **Cloudflare Tunnel** (`cloudflared` container). No public inbound ports; SSH only via **Tailscale** | ₹0 |
 | DNS, CDN, WAF | Cloudflare free | ₹0 |
 | Static hosting | Cloudflare Pages (console SPA) | ₹0 |
@@ -252,3 +252,4 @@ Deploy model: GitHub Actions → build and push images → SSH via Tailscale →
 | D-4 | Is the legacy site live with real payments? (decides whether plan 01 runs) | **Answered 2026-10-07: not live.** Plan 01 stopped after Task 3; legacy `backend/` and `frontend/` removed from the repo (kept in git history) |
 | D-6 | Does the legacy MongoDB hold real data worth migrating? | **Answered 2026-10-07: no.** Old data is deleted, plan 13 is skipped, v2 launches with an empty database |
 | D-5 | Transactional email sender domain (needs DNS SPF/DKIM on the real domain) | `no-reply@craftoria.in` |
+| D-7 | Where does development run? | **Answered 2026-10-08:** on an Oracle `dev` VM via VS Code Remote-SSH (the laptop is too weak for Docker). Guide: `infra/oracle/DEV-VM-SETUP.md` |

@@ -1,0 +1,48 @@
+#cloud-config
+# Craftoria dev VM (Oracle Cloud Always Free, Ampere A1, Ubuntu 24.04 aarch64).
+# Paste this whole file into: Create instance → Show advanced options → Management → "Paste cloud-init script".
+# It runs once on first boot (5–10 minutes). Check progress with: cloud-init status --wait
+
+timezone: Asia/Kolkata
+
+package_update: true
+package_upgrade: true
+packages:
+  - git
+  - curl
+  - ca-certificates
+  - build-essential
+  - unattended-upgrades
+  - jq
+
+# 4 GB swap so big installs and builds never run out of memory
+swap:
+  filename: /swapfile
+  size: 4G
+
+write_files:
+  - path: /etc/sysctl.d/99-craftoria.conf
+    content: |
+      vm.swappiness=10
+      fs.inotify.max_user_watches=524288
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": { "max-size": "10m", "max-file": "3" }
+      }
+
+runcmd:
+  - sysctl --system
+  # Docker Engine + compose plugin (official repository, arm64)
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker ubuntu
+  - systemctl enable --now docker
+  # Node.js 24 LTS + pnpm 10
+  - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+  - apt-get install -y nodejs
+  - npm install -g pnpm@10
+  # automatic security updates
+  - dpkg-reconfigure -f noninteractive unattended-upgrades
+  - mkdir -p /home/ubuntu/code && chown ubuntu:ubuntu /home/ubuntu/code
+  - echo "craftoria dev VM ready" > /var/log/craftoria-ready

@@ -4,7 +4,7 @@
 
 **Goal:** Run Craftoria v2 in production and staging at near-zero cost: Oracle Cloud Always Free ARM VMs running Docker Compose behind a Cloudflare Tunnel, with encrypted secrets in git, one-command deploys and rollbacks from GitHub Actions, nightly off-site encrypted backups with automated restore tests, and free-tier monitoring and alerting.
 
-**Architecture:** See `02-target-architecture.md` §3 and §10. Two VMs (`prod`: 3 OCPU / 18 GB; `staging`: 1 OCPU / 6 GB). No public inbound ports: web traffic arrives through `cloudflared`, and admin access goes through Tailscale. Images are built for `linux/arm64` and pulled from GHCR. Secrets are sops/age-encrypted in `infra/env/*.enc.env` and decrypted on the VM at deploy time.
+**Architecture:** See `02-target-architecture.md` §3 and §10. Two VMs: `dev` (2 OCPU / 12 GB, already created for development per decision D-7; **staging runs on it** as a separate compose project) and `prod` (2 OCPU / 12 GB). No public inbound ports: web traffic arrives through `cloudflared`, and admin access goes through Tailscale. Images are built for `linux/arm64` and pulled from GHCR. Secrets are sops/age-encrypted in `infra/env/*.enc.env` and decrypted on the VM at deploy time.
 
 **Tech Stack:** Docker Engine + Compose v2, Oracle Cloud Infrastructure (Always Free), Cloudflare (DNS, Tunnel, R2, Pages, WAF, Access), Tailscale, GitHub Actions + GHCR, sops + age, rclone, Grafana Cloud (Alloy agent), Sentry, UptimeRobot.
 
@@ -17,8 +17,8 @@
 ## Global Constraints
 
 - Directory on each VM: `/opt/craftoria/{infra,data,backups}`, owned by the `deploy` user. Postgres data lives in the named volume `pgdata`.
-- Memory limits (prod): postgres 6g, rabbitmq 768m, valkey 320m, each Node service 384m, storefront 512m, cloudflared 128m, alloy 256m. Staging: half, with Postgres 1.5g.
-- Postgres prod settings: `shared_buffers=4GB`, `effective_cache_size=10GB`, `work_mem=16MB`, `maintenance_work_mem=512MB`, `max_connections=200`, `wal_compression=on`, `checkpoint_timeout=15min`, `log_min_duration_statement=500ms`.
+- Memory limits (prod, 12 GB VM): postgres 4g, rabbitmq 640m, valkey 256m, each Node service 320m, storefront 448m, cloudflared 128m, alloy 256m. Staging (on the dev VM): half, with Postgres 1.5g.
+- Postgres prod settings: `shared_buffers=3GB`, `effective_cache_size=7GB`, `work_mem=16MB`, `maintenance_work_mem=512MB`, `max_connections=200`, `wal_compression=on`, `checkpoint_timeout=15min`, `log_min_duration_statement=500ms`.
 - Image name: `ghcr.io/<owner>/craftoria-<component>:<git-sha>`. The deploy tag is always a commit SHA; `latest` is never used.
 - The deploy order is fixed: pull → migrate (each `<svc>-migrate`, sequential) → `up -d --wait` → smoke → mark good, or roll back.
 - Backups: 02:30 IST nightly; retention 7 daily, 4 weekly, 6 monthly; encrypted with age to a key **not** stored on the VM (the public recipient is on the VM; the private key is in the owner's password manager).
@@ -82,7 +82,7 @@
 
 **Interfaces:**
 - Produces: a cloud-init that creates the `deploy` user (sudo, docker group); installs Docker Engine + compose plugin (official apt repo, arm64), Tailscale (`tailscale up --authkey=${TS_AUTHKEY} --ssh --hostname=craftoria-<env>`), `sops`, `age`, `rclone`; enables `unattended-upgrades`; sets up a 4 GB swapfile with `vm.swappiness=10`; journald `SystemMaxUse=500M`; `ufw default deny incoming`, `allow in on tailscale0`; creates `/opt/craftoria`. `verify-host.sh` prints PASS/FAIL for Docker version, compose, Tailscale up, ufw active, no listening public ports except via Tailscale (`ss -tlnp`), swap, and free disk > 20 GB.
-- The RUNBOOK covers, step by step for a first-time user: (1) sign up (choose a home region with A1 capacity, e.g. Mumbai or Hyderabad; the home region can't change); (2) **upgrade to Pay-As-You-Go** and create a budget alert at ₹100 to keep Always Free resources safe from idle reclamation; (3) create a VCN with the wizard; (4) create the `prod` instance (Ampere A1 Flex, 3 OCPU / 18 GB, Ubuntu 24.04 aarch64, boot volume 100 GB, paste cloud-init with your Tailscale auth key); (5) create `staging` (1 OCPU / 6 GB, 50 GB); (6) after Tailscale shows both machines, **delete the ingress rule for port 22** from the security list; (7) copy each VM's age private key to `/etc/craftoria/age.key` (`chmod 400`, owner `deploy`); (8) run `verify-host.sh`. It also explains what to do if you hit "Out of capacity" (retry later, or 2 OCPU first and resize).
+- The RUNBOOK covers, step by step for a first-time user: (1) sign up (choose a home region with A1 capacity, e.g. Mumbai or Hyderabad; the home region can't change); (2) **upgrade to Pay-As-You-Go** and create a budget alert at ₹100 to keep Always Free resources safe from idle reclamation; (3) create a VCN with the wizard; (4) create the `prod` instance (Ampere A1 Flex, 2 OCPU / 12 GB, Ubuntu 24.04 aarch64, boot volume 100 GB, paste cloud-init with your Tailscale auth key); (5) the `dev` VM already exists (created per `infra/oracle/DEV-VM-SETUP.md`, decision D-7) and also hosts staging; add Tailscale to it; (6) after Tailscale shows both machines, **delete the ingress rule for port 22** from the security list; (7) copy each VM's age private key to `/etc/craftoria/age.key` (`chmod 400`, owner `deploy`); (8) run `verify-host.sh`. It also explains what to do if you hit "Out of capacity" (retry later, or 2 OCPU first and resize).
 
 - [ ] **Step 1 (agent):** Write the RUNBOOK, cloud-init and verify script; lint the cloud-init with `cloud-init schema --config-file` in a container.
 - [ ] **Step 2 [OWNER]:** Follow the RUNBOOK. Paste the `verify-host.sh` output for both VMs into the task report. Expected: all PASS.
