@@ -1,0 +1,10 @@
+# Generated / vendored
+pnpm-lock.yaml
+**/dist/
+**/.turbo/
+**/coverage/
+.agents/
+.claude/
+docs/
+# Hand-written project docs and agent rules
+/*.md
