@@ -1,0 +1,16 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000021",
+  "type": "payment.captured",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "payment",
+  "correlationId": "req-0021",
+  "data": {
+    "paymentIntentId": "0192f7a4-3b6c-7d2e-8f10-000000000030",
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "amountPaise": 373000,
+    "gatewayPaymentId": "pay_RZP456",
+    "method": "upi",
+    "capturedAt": "2026-10-07T10:21:00.000Z"
+  }
+}

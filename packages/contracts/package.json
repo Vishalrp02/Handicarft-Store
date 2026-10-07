@@ -9,10 +9,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures.d.ts",
+      "import": "./dist/fixtures.js"
+    },
+    "./fixtures/*.json": "./fixtures/*.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "fixtures"
   ],
   "scripts": {
     "build": "tsup",
@@ -27,6 +33,7 @@
   "devDependencies": {
     "@craftoria/eslint-config": "workspace:*",
     "@craftoria/tsconfig": "workspace:*",
+    "@types/node": "^24.19.1",
     "eslint": "^9.39.5",
     "globals": "^17.13.0",
     "tsup": "^8.5.1",

@@ -6,6 +6,7 @@ export default [
   ...craftoria,
   { languageOptions: { globals: { ...globals.browser } } },
   {
+    ignores: ['src/fixtures.ts', 'src/**/*.test.ts'],
     rules: {
       'no-restricted-imports': [
         'error',

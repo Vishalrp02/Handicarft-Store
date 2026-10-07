@@ -1,0 +1,14 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000007",
+  "type": "seller.rejected",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "seller",
+  "correlationId": "req-0007",
+  "data": {
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "contactEmail": "studio@jaipurblue.in",
+    "reason": "Please add photos of your workshop and your craft."
+  }
+}
