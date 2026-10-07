@@ -1,0 +1,18 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000014",
+  "type": "inventory.commit_failed",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "catalog",
+  "correlationId": "req-0014",
+  "data": {
+    "reservationId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "items": [
+      {
+        "productId": "0192f7a4-3b6c-7d2e-8f10-000000000002",
+        "requested": 1,
+        "available": 0
+      }
+    ]
+  }
+}

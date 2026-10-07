@@ -314,14 +314,14 @@ Envelope: see `02-target-architecture.md` §5.2. Every event lists its payload (
 | `inventory.commit_failed` | catalog | `{reservationId (=orderId), items: {productId, requested, available}[]}` | order |
 | `order.placed` | order | `{orderId, orderNumber, userId, customerEmail, customerName, totalPaise}` | notification (`order_contacts` projection, used for refund and late-payment emails) |
 | `order.paid` | order | `{orderId, orderNumber, userId, customerEmail, customerName, totalPaise, shippingPaise, paidAt, shippingAddress, sellerOrders: {sellerOrderId, sellerId, subtotalPaise, items: {productId, title, qty, unitPricePaise}[]}[]}` | catalog, cart, seller, notification |
-| `order.cancelled` | order | `{orderId, orderNumber, userId, reason: 'payment_timeout'|'buyer_cancelled'|'admin_cancelled', wasPaid: false}` | catalog (release) |
+| `order.cancelled` | order | `{orderId, orderNumber, userId, reason: 'payment_timeout'|'buyer_cancelled'|'admin_cancelled', wasPaid: false}` (`wasPaid` is always the literal `false`: paid orders are cancelled per seller order instead) | catalog (release) |
 | `order.refund_required` | order | `{orderId, sellerOrderId: Uuid | null, amountPaise, reason: 'seller_order_cancelled'|'late_payment'|'commit_failed'}` | payment |
-| `seller_order.status_changed` | order | `{sellerOrderId, orderId, orderNumber, sellerId, userId, customerEmail, from, to, actorType, trackingCarrier?, trackingNumber?, reason?}` | notification |
+| `seller_order.status_changed` | order | `{sellerOrderId, orderId, orderNumber, sellerId, userId, customerEmail, from: SellerOrderStatus, to: SellerOrderStatus, actorType, trackingCarrier?, trackingNumber?, reason?}` | notification |
 | `seller_order.delivered` | order | `{sellerOrderId, orderId, sellerId, deliveredAt}` | seller |
 | `payment.captured` | payment | `{paymentIntentId, orderId, amountPaise, gatewayPaymentId, method, capturedAt}` | order |
 | `payment.failed` | payment | `{paymentIntentId, orderId, gatewayPaymentId, reason}` | order (history only; the order stays payable until it expires) |
-| `refund.processed` | payment | `{refundId, orderId, sellerOrderId: Uuid | null, amountPaise, reason}` | order, seller, notification |
-| `refund.failed` | payment | `{refundId, orderId, sellerOrderId, amountPaise, reason}` | order (refund_status=failed → admin dashboard) |
+| `refund.processed` | payment | `{refundId, orderId, sellerOrderId: Uuid | null, amountPaise, kind: 'order_refund'|'duplicate_payment', reason}` | order, seller, notification. **`kind: 'duplicate_payment'`** = the buyer paid twice and the extra payment was returned: order and seller **must ignore it** (no status or ledger change); notification still emails the buyer |
+| `refund.failed` | payment | `{refundId, orderId, sellerOrderId: Uuid | null, amountPaise, kind, reason}` | order (refund_status=failed → admin dashboard; ignores `duplicate_payment`, which ops handle in the payment admin list) |
 | `payout.paid` | seller | `{payoutId, sellerId, amountPaise, utr, contactEmail}` | notification |
 
 Contract test rule: the producer's integration test parses its outbox payload with the schema; the consumer's test feeds the shared fixture `contracts/fixtures/<type>.v1.json`. Both must pass against the same schema.

@@ -1,0 +1,13 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000001",
+  "type": "user.registered",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "identity",
+  "correlationId": "req-0001",
+  "data": {
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "email": "asha@example.in",
+    "name": "Asha Rao"
+  }
+}

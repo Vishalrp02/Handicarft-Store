@@ -169,7 +169,7 @@
   - `payment.captured`: lock the order. If `pending_payment`: an amount mismatch → throw `Error('amount mismatch')`. Otherwise → `paid`, `paid_at`, `activate` every seller order (system), history, enqueue `order.paid.v1` (full payload per contracts §8). If `paid|completed`: no-op. If `cancelled`: set `refund_status='pending'`, history (reason `late_payment`), enqueue `order.refund_required.v1{sellerOrderId:null, amountPaise: event amount, reason:'late_payment'}`.
   - `payment.failed`: history only (actor system, reason = event reason).
   - `inventory.commit_failed`: lock the order; system-cancel every non-cancelled seller order with reason `stock_unavailable`, **without** per-seller-order refunds; enqueue one `order.refund_required.v1{sellerOrderId:null, amountPaise: total, reason:'commit_failed'}`; `refund_status='pending'`.
-  - `refund.processed`: with `sellerOrderId`, that seller order → `refunded`; without it, every cancelled seller order with `refund_status='pending'` → `refunded`. The order's `refund_status` → `refunded` when none is pending.
+  - `refund.processed` / `refund.failed` with `kind: 'duplicate_payment'`: history entry only, no status change. Otherwise, `refund.processed`: with `sellerOrderId`, that seller order → `refunded`; without it, every cancelled seller order with `refund_status='pending'` → `refunded`. The order's `refund_status` → `refunded` when none is pending.
   - `refund.failed`: the matching `refund_status='failed'` (seller order and order).
   - `user.deleted`: anonymise the orders per contracts §8.
 
@@ -182,6 +182,7 @@
   it('commit_failed cancels all seller orders and requests one full refund', ...)
   it('refund.processed for one seller order updates statuses', ...)
   it('refund.failed sets failed', ...)
+  it('duplicate_payment refund does not change refund_status', ...)
   it('user.deleted anonymises customer fields and address', ...)
   ```
 - [ ] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run → PASS.

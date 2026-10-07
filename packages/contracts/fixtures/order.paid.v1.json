@@ -1,0 +1,56 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000016",
+  "type": "order.paid",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "order",
+  "correlationId": "req-0016",
+  "data": {
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "orderNumber": "CR-2610-000123",
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "customerEmail": "asha@example.in",
+    "customerName": "Asha Rao",
+    "totalPaise": 373000,
+    "shippingPaise": 0,
+    "paidAt": "2026-10-07T10:21:04.000Z",
+    "shippingAddress": {
+      "fullName": "Asha Rao",
+      "phone": "9876543210",
+      "line1": "12, Bapu Bazaar",
+      "landmark": "Near Hawa Mahal",
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "pincode": "302001",
+      "country": "IN"
+    },
+    "sellerOrders": [
+      {
+        "sellerOrderId": "0192f7a4-3b6c-7d2e-8f10-000000000021",
+        "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+        "subtotalPaise": 245000,
+        "items": [
+          {
+            "productId": "0192f7a4-3b6c-7d2e-8f10-000000000002",
+            "title": "Blue pottery vase",
+            "qty": 1,
+            "unitPricePaise": 245000
+          }
+        ]
+      },
+      {
+        "sellerOrderId": "0192f7a4-3b6c-7d2e-8f10-000000000023",
+        "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000004",
+        "subtotalPaise": 128000,
+        "items": [
+          {
+            "productId": "0192f7a4-3b6c-7d2e-8f10-000000000012",
+            "title": "Hand block-printed cotton dupatta",
+            "qty": 2,
+            "unitPricePaise": 64000
+          }
+        ]
+      }
+    ]
+  }
+}

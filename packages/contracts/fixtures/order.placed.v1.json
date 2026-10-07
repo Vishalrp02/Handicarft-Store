@@ -1,0 +1,16 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000015",
+  "type": "order.placed",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "order",
+  "correlationId": "req-0015",
+  "data": {
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "orderNumber": "CR-2610-000123",
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "customerEmail": "asha@example.in",
+    "customerName": "Asha Rao",
+    "totalPaise": 373000
+  }
+}
