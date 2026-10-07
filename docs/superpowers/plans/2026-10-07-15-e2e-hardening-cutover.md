@@ -10,7 +10,7 @@
 
 **Spec:** `02-target-architecture.md` (all of §7), `01-current-state-audit.md` §5, plan 13 `RUNBOOK.md`.
 
-**Prerequisite:** plans 03–12 complete for Tasks 1–4; plan 14 complete for Tasks 3–6; plan 13 complete for Task 6.
+**Prerequisite:** plans 03–12 complete, **including the owner-built cart service (plan 06)**, for Tasks 1–4; plan 14 complete for Tasks 3–6; plan 13 complete for Task 6.
 
 **Required skills:** `e2e-testing-patterns`, `safe-backend-changes` (fixes in services), `web-design-guidelines` (a11y spec); plus the workflow skills `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`. Use **only** the project skills in `.claude/skills/` (mirrored in `.agents/skills/`); no other skills or plugins. See `docs/architecture/05-engineering-standards.md` §8.
 

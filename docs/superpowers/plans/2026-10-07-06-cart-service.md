@@ -1,5 +1,7 @@
 # Cart Service Implementation Plan
 
+> **OWNER-BUILT (2026-10-07).** The project owner writes this service by hand. AI agents must not write or modify code in `services/cart/` (see `CLAUDE.md` → "Owner-built code"). This plan is the owner's guide: follow the tasks in order, writing the listed tests first.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build `services/cart`: per-user cart and wishlist, guest-cart merge, a local product snapshot projection (so the cart renders without calling catalog), the internal cart read for checkout, and cleanup on `order.paid` and `user.deleted`.

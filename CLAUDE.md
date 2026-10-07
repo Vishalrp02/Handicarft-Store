@@ -31,6 +31,11 @@ Use ONLY the skills in this repo's skill pack (`.claude/skills/` for Claude Code
 - **Workflow** (every task): `using-git-worktrees`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`; orchestration via `subagent-driven-development` / `executing-plans`; `brainstorming` → `writing-plans` only for features not already planned.
 - Every plan task in `docs/superpowers/plans/` has a **Skills:** line: load exactly those. Full table and precedence rules: `docs/architecture/05-engineering-standards.md` §8.
 
+## Owner-built code (hands off)
+- `services/cart/` (plan 06) is written **by the project owner by hand** as a learning/portfolio piece. AI agents must **not** create, edit, generate, scaffold, refactor or "fix" any file under `services/cart/`, and must not open PRs that touch it, unless the owner explicitly asks for that specific change in the current conversation.
+- Agents may read `services/cart/` and plan 06, answer the owner's questions about it, and review it when asked (review comments only, no code).
+- Other services integrate with cart only through `@craftoria/contracts` (internal API `GET /internal/carts/:userId`, events) and use fakes in their own tests, so nothing waits on cart. Contract changes that affect cart follow roadmap §5 and need the owner's approval.
+
 ## Hard rules
 - Never edit an already-run migration; never drop/rename columns in the same release.
 - Money in integer paise. Stock decrements in a transaction.
