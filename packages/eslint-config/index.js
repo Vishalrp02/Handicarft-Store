@@ -30,8 +30,15 @@ export default tseslint.config(
     },
   },
   {
-    // Tests may use non-null assertions (05-engineering-standards §3).
+    // Tests may use non-null assertions (05-engineering-standards §3) and read untyped
+    // HTTP response bodies (supertest's res.body is `any`).
     files: ['**/*.test.ts', '**/*.int.test.ts', '**/test/**/*.ts'],
-    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+    },
   },
 )

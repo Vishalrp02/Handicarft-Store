@@ -1,0 +1,10 @@
+{
+  "extends": "@craftoria/tsconfig/node.json",
+  "compilerOptions": {
+    // bundled by tsup, so extensionless relative imports are fine
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true
+  },
+  "include": ["src", "*.config.ts"]
+}
