@@ -1,0 +1,16 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000023",
+  "type": "refund.processed",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "payment",
+  "correlationId": "req-0023",
+  "data": {
+    "refundId": "0192f7a4-3b6c-7d2e-8f10-000000000031",
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "sellerOrderId": "0192f7a4-3b6c-7d2e-8f10-000000000023",
+    "amountPaise": 128000,
+    "kind": "order_refund",
+    "reason": "seller_order_cancelled"
+  }
+}

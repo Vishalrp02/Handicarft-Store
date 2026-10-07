@@ -1,0 +1,13 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000008",
+  "type": "seller.suspended",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "seller",
+  "correlationId": "req-0008",
+  "data": {
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "reason": "Repeated late shipments."
+  }
+}

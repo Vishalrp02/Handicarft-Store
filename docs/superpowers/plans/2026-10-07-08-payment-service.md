@@ -146,7 +146,7 @@
   - Handler `order.refund_required` → `request(...)` with key `refund:<orderId>:<sellerOrderId|'all'>:<reason>`.
   - `POST /v1/admin/refunds` (`requireRole('admin')` + `idempotency({required:true})`) → 202 `Refund` (`reason 'admin:<text>'`, `requestedBy 'admin:<id>'`). `GET /v1/admin/refunds`.
   - Dispatcher job (`runJob 'refund-dispatcher'`): for up to 20 `pending` refunds with `gateway_refund_id IS NULL`: `listRefunds(gateway_payment_id)` → if one has `notes.craftoriaRefundId === refund.id`, adopt its id; else `createRefund({paymentId, amountPaise, notes:{craftoriaRefundId, orderId}})` → save `gateway_refund_id`. Errors are logged and retried next tick.
-  - Webhook `refund.processed` → find by `gateway_refund_id` (or `notes.craftoriaRefundId`) → `processed`, `processed_at`. If `counts_against_intent`: `refunded_paise += amount`, intent status `refunded` (when equal to the amount) or `partially_refunded`. Enqueue `refund.processed.v1`. `refund.failed` → `failed` + `refund.failed.v1`.
+  - Webhook `refund.processed` → find by `gateway_refund_id` (or `notes.craftoriaRefundId`) → `processed`, `processed_at`. If `counts_against_intent`: `refunded_paise += amount`, intent status `refunded` (when equal to the amount) or `partially_refunded`. Enqueue `refund.processed.v1` with `kind = counts_against_intent ? 'order_refund' : 'duplicate_payment'`. `refund.failed` → `failed` + `refund.failed.v1` (same `kind` rule).
 
 - [ ] **Step 1: Write failing tests:**
   ```ts

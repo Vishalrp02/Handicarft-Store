@@ -1,0 +1,18 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000011",
+  "type": "product.published",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "catalog",
+  "correlationId": "req-0011",
+  "data": {
+    "productId": "0192f7a4-3b6c-7d2e-8f10-000000000002",
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "sellerDisplayName": "Jaipur Blue",
+    "slug": "blue-pottery-vase-a1b2c3",
+    "title": "Blue pottery vase",
+    "pricePaise": 245000,
+    "imageUrl": "https://media.craftoria.in/p/0192f7a4/vase-400.webp",
+    "status": "active"
+  }
+}
