@@ -1,0 +1,14 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000020",
+  "type": "seller_order.delivered",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "order",
+  "correlationId": "req-0020",
+  "data": {
+    "sellerOrderId": "0192f7a4-3b6c-7d2e-8f10-000000000021",
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "deliveredAt": "2026-10-11T08:00:00.000Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000010",
+  "type": "payout.paid",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "seller",
+  "correlationId": "req-0010",
+  "data": {
+    "payoutId": "0192f7a4-3b6c-7d2e-8f10-000000000040",
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "amountPaise": 1984500,
+    "utr": "HDFCN52026100712345",
+    "contactEmail": "studio@jaipurblue.in"
+  }
+}
