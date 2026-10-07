@@ -1,0 +1,113 @@
+# ==========================================
+# Craftoria - Comprehensive .gitignore
+# ==========================================
+
+# 1. Environment & Secret Credentials
+.env
+.env.*
+*.env
+*.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+!*.env.example
+
+# 2. Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# 3. Production & Build Outputs
+dist/
+*/dist/
+dist-ssr/
+build/
+*/build/
+out/
+.next/
+.cache/
+*.tsbuildinfo
+
+# 4. Logs & Debugging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 5. OS & Filesystem Metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 6. IDEs & Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swo
+*.swp
+*.sublime-workspace
+*.sublime-project
+
+# 7. Testing, Coverage & Linters
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+.eslintcache
+.stylelintcache
+
+# 8. Temporary & Backup Files
+*.tmp
+*.temp
+*.bak
+*.orig
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+temp/
+tmp/
+
+# 9. Archives & Compressed Bundles
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# 10. Database Dumps & Local Stores
+*.sql
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+
+# 11. Monorepo tooling
+**/.turbo/
+**/dist/
+.superpowers/
+*.dec.env
