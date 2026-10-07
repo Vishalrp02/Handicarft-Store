@@ -65,6 +65,9 @@ Role         = 'buyer' | 'artisan' | 'admin'
 PublicUser = { id: Uuid, email: string, name: string, phone: string | null, emailVerified: boolean,
                roles: Role[], sellerId: Uuid | null, createdAt: IsoDate }
 AuthResult = { user: PublicUser, accessToken: string, accessTokenExpiresAt: IsoDate }
+AdminUser  = PublicUser & { status: 'active' | 'disabled' | 'deleted' }
+// Emails are trimmed and lower-cased. Password rules (10..128) apply to register, reset and change only;
+// login and confirmation fields accept any non-empty value so the policy is not revealed.
 ```
 
 | Method | Path | Auth | Body → Response |
@@ -86,7 +89,7 @@ AuthResult = { user: PublicUser, accessToken: string, accessTokenExpiresAt: IsoD
 | PATCH | `/v1/me/addresses/:id` | 🔑 | partial → `Address` |
 | DELETE | `/v1/me/addresses/:id` | 🔑 | → 204 |
 | GET | `/.well-known/jwks.json` | 🔓 | → JWKS (`Cache-Control: public, max-age=600`) |
-| GET | `/v1/admin/users` | 🛡 | `?q&role&status&cursor&limit` → `CursorPage<PublicUser & {status}>` |
+| GET | `/v1/admin/users` | 🛡 | `?q&role&status&cursor&limit` → `CursorPage<AdminUser>` |
 | PATCH | `/v1/admin/users/:id` | 🛡 | `{status: 'active'|'disabled'}` → 200; disabling revokes sessions |
 | POST | `/v1/admin/users/:id/roles` | 🛡 | `{role: 'admin'}` → 204 (only `admin` is grantable here) |
 
@@ -110,6 +113,7 @@ ProductDetail= ProductCard & { description: string, category: Category, images: 
                  availableQty: number /* capped at 10 for display */, taxRateBps: number, publishedAt: IsoDate }
 SellerProduct= ProductDetail & { status: ProductStatus, rejectionReason: string | null, onHand: number, reserved: number,
                  hsnCode: string | null, updatedAt: IsoDate }
+               // overrides: publishedAt: IsoDate | null (drafts were never published); availableQty uncapped
 ProductStatus= 'draft' | 'pending_review' | 'active' | 'rejected' | 'archived'
 Review       = { id: Uuid, productId: Uuid, authorName: string, rating: 1|2|3|4|5, title: string | null,
                  body: string | null, verifiedPurchase: true, createdAt: IsoDate }
@@ -123,7 +127,7 @@ ProductUpsert= { title: 3..120, description: 20..5000, categoryId: Uuid, pricePa
 | Method | Path | Auth | Body → Response |
 |---|---|---|---|
 | GET | `/v1/categories` | 🔓 | → `Category[]` (flat; client builds the tree) |
-| GET | `/v1/products` | 🔓 | `?q&category(slug)&seller(slug)&minPrice&maxPrice&inStock&sort=relevance|newest|price_asc|price_desc|rating&page&limit` → `Page<ProductCard>` |
+| GET | `/v1/products` | 🔓 | `?q&category(slug)&seller(slug)&minPrice&maxPrice&inStock&sort=relevance|newest|price_asc|price_desc|rating&page&limit` → `Page<ProductCard>`. `minPrice`/`maxPrice` are **paise**; `inStock` is `true`/`false`; `q` ≤ 100 chars |
 | GET | `/v1/products/:idOrSlug` | 🔓 | → `ProductDetail` (404 unless active and seller approved) |
 | GET | `/v1/products/:id/reviews` | 🔓 | `?page&limit` → `ReviewPage = Page<Review> & { summary: { avg: number | null, count: number, distribution: [n1, n2, n3, n4, n5] } }` |
 | POST | `/v1/products/:id/reviews` | 🔑 | `{rating, title?: ..100, body?: ..2000}` → 201 `Review` (`PURCHASE_REQUIRED`, `ALREADY_REVIEWED`) |
@@ -257,7 +261,7 @@ AdminStats  = { gmvPaise: {today, last7d, last30d}, orders: {today, last7d, pend
 | POST | `/v1/seller/orders/:sellerOrderId/:action` | 🎨 | action ∈ `accept|pack|ship|deliver|cancel`; `ship` body `{carrier: 2..40, trackingNumber: 4..40}`, `cancel` body `{reason: 5..200}` → `SellerOrderView` |
 | GET | `/v1/admin/orders` | 🛡 | `?status&q(orderNumber/email)&cursor` → `CursorPage<OrderSummary & {customerEmail}>` |
 | GET | `/v1/admin/orders/:id` | 🛡 | → `Order & {customerEmail, customerName, history}` |
-| POST | `/v1/admin/seller-orders/:id/:action` | 🛡 | same actions, `{reason}` required → `SellerOrderView` |
+| POST | `/v1/admin/seller-orders/:id/:action` | 🛡 | same actions, body `{reason: 5..200, carrier?, trackingNumber?}` (carrier + tracking required for `ship`) → `SellerOrderView` |
 | GET | `/v1/admin/stats` | 🛡 | → `AdminStats` |
 
 ---
@@ -271,6 +275,9 @@ PaymentIntentOut    = { paymentIntentId: Uuid, provider: 'razorpay', keyId: stri
 VerifyPayment       = { razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string }
 AdminRefundRequest  = { orderId: Uuid, sellerOrderId?: Uuid, amountPaise: Paise, reason: 5..200 }
 Refund              = { id, orderId, sellerOrderId: Uuid | null, amountPaise, status: 'pending'|'processed'|'failed', reason, createdAt, processedAt }
+PaymentIntent       = { id, orderId, userId, amountPaise, currency: 'INR', status: PaymentIntentStatus, gatewayOrderId,
+                        gatewayPaymentId: string | null, method: string | null, refundedPaise, failureReason: string | null,
+                        capturedAt: IsoDate | null, createdAt: IsoDate }   // admin list view
 ```
 
 | Method | Path | Auth | Body → Response |
