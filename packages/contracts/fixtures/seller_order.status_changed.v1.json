@@ -1,0 +1,21 @@
+{
+  "id": "0192f7a5-0000-7000-8000-000000000019",
+  "type": "seller_order.status_changed",
+  "version": 1,
+  "occurredAt": "2026-10-07T10:21:05.000Z",
+  "producer": "order",
+  "correlationId": "req-0019",
+  "data": {
+    "sellerOrderId": "0192f7a4-3b6c-7d2e-8f10-000000000021",
+    "orderId": "0192f7a4-3b6c-7d2e-8f10-000000000020",
+    "orderNumber": "CR-2610-000123",
+    "sellerId": "0192f7a4-3b6c-7d2e-8f10-000000000003",
+    "userId": "0192f7a4-3b6c-7d2e-8f10-000000000007",
+    "customerEmail": "asha@example.in",
+    "from": "packed",
+    "to": "shipped",
+    "actorType": "seller",
+    "trackingCarrier": "India Post",
+    "trackingNumber": "EE123456789IN"
+  }
+}

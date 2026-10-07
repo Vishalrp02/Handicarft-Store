@@ -103,7 +103,7 @@
 - Produces:
   - `order.paid` → per seller order: `sale +subtotal` and `commission -percentOfPaise(subtotal, bps)` (both `pending`, with `order_id`, `seller_order_id`, `order_number`; `ON CONFLICT DO NOTHING`). An unknown `sellerId` → throw (retry, then DLQ).
   - `seller_order.delivered` → set `available_at = deliveredAt + RETURN_WINDOW_DAYS` on that seller order's `sale`/`commission` rows.
-  - `refund.processed` → reversals per `04-data-model.md` "Ledger semantics", computed by the pure function `computeReversal({ refundAmountPaise, salePaise, commissionPaise, alreadyReversedPaise }): { saleReversal: number; commissionReversal: number }`.
+  - `refund.processed` → **ignore `kind: 'duplicate_payment'`** (the seller never received that money); otherwise reversals per `04-data-model.md` "Ledger semantics", computed by the pure function `computeReversal({ refundAmountPaise, salePaise, commissionPaise, alreadyReversedPaise }): { saleReversal: number; commissionReversal: number }`.
   - Maturity job (`runJob 'ledger-maturity'`): `pending` → `available` where `available_at <= now`.
   - `GET /v1/seller/ledger`, `GET /v1/seller/balance` (contracts §4).
 
@@ -116,6 +116,7 @@
   it('unknown seller throws so message is retried', ...)
   it('delivered sets available_at +7 days; maturity job makes it available', ...)  // fake clock
   it('order-level refund reverses every seller order', ...)
+  it('duplicate_payment refund leaves the ledger unchanged', ...)
   it('balance sums by status', ...)
   ```
 - [ ] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run → PASS.
