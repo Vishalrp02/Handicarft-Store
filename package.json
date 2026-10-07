@@ -6,8 +6,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
+    "dev": "node api.js && turbo run dev",
+    "build": "node api.js && turbo run build",
     "test": "turbo run test",
     "test:int": "turbo run test:int",
     "lint": "turbo run lint",
