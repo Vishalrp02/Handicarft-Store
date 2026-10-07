@@ -1,3 +1,6 @@
 import craftoria from '@craftoria/eslint-config'
+import { createRequire } from 'module';
 
-export default [...craftoria]
+const require = createRequire(import.meta.url);
+
+export default [...craftoria];
