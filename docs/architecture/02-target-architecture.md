@@ -246,9 +246,9 @@ Deploy model: GitHub Actions → build and push images → SSH via Tailscale →
 
 | ID | Question | Default if not answered |
 |---|---|---|
-| D-1 | Can the GitHub repo be **public**? Public gets free arm64 runners (`ubuntu-24.04-arm`) and free GHCR storage. Private means images are built **on the VM** (`docker compose build`) by the deploy job instead | Public |
+| D-1 | Can the GitHub repo be **public**? Public gets free arm64 runners (`ubuntu-24.04-arm`) and free GHCR storage. Private means images are built **on the VM** (`docker compose build`) by the deploy job instead | **Answered 2026-10-07: public** (github.com/Vishalrp02/Handicarft-Store) |
 | D-2 | Real domain name | `craftoria.in` used as a placeholder in config |
-| D-3 | Shipping fee, free-shipping threshold, default commission, payout minimum, return window | ₹99 / ₹999 / 10 % / ₹500 / 7 days |
+| D-3 | Shipping fee, free-shipping threshold, default commission, payout minimum, return window | **Answered 2026-10-07: use the defaults** ₹99 / ₹999 / 10 % / ₹500 / 7 days |
 | D-4 | Is the legacy site live with real payments? (decides whether plan 01 runs) | **Answered 2026-10-07: not live.** Plan 01 stopped after Task 3; legacy `backend/` and `frontend/` removed from the repo (kept in git history) |
-| D-6 | Does the legacy MongoDB hold real data worth migrating? | Undecided. Plan 13 runs only if yes |
+| D-6 | Does the legacy MongoDB hold real data worth migrating? | **Answered 2026-10-07: no.** Old data is deleted, plan 13 is skipped, v2 launches with an empty database |
 | D-5 | Transactional email sender domain (needs DNS SPF/DKIM on the real domain) | `no-reply@craftoria.in` |

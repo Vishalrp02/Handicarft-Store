@@ -1,5 +1,7 @@
 # Legacy Data Migration Implementation Plan
 
+> **Status: SKIPPED (2026-10-07).** Decision D-6: the legacy MongoDB holds no data worth keeping and is being deleted. Do not execute this plan. It is kept only as a reference in case real data appears later.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build `tools/mongo-migrator`, a one-time, idempotent, dry-runnable CLI that moves legacy MongoDB data (users, wishlists, products and images, reviews, orders, carts) into the v2 Postgres databases, with a reconciliation report to sign off the cutover.
