@@ -1,4 +1,6 @@
+export * from './auth/middleware'
 export type { AuthContext } from './auth/types'
+export * from './auth/verifier'
 export * from './clock'
 export * from './config'
 export * from './context'
