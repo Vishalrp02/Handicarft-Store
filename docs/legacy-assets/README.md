@@ -5,5 +5,5 @@ The legacy app (`backend/`, `frontend/`) was removed on 2026-10-07; it is still 
 
 | File | What it is | Used by |
 |---|---|---|
-| `india-state-districts.json` | Indian states → districts list | Storefront checkout address form (plan 11 Task 7) |
-| `addressData.js` | Country list and Indian states used by the legacy address form | Source for the `IndianStateSchema` enum in `@craftoria/contracts` (plan 02 Task 2) — verify against the 36 states/UTs |
+| `india-state-districts.json` | Districts for **only 3 states** (Rajasthan, Maharashtra, Uttar Pradesh), so it's incomplete | Not used as a source of truth. If the checkout needs districts, use a complete dataset |
+| `addressData.js` | Country list and Indian states used by the legacy address form | Superseded by `INDIAN_STATES` in `@craftoria/contracts` (all 28 states + 8 union territories) |
