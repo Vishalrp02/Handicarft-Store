@@ -1,0 +1,5 @@
+{
+  "extends": "@craftoria/tsconfig/node.json",
+  "compilerOptions": { "noEmit": true },
+  "include": ["*.ts"]
+}
