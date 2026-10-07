@@ -178,7 +178,7 @@
   - `createJwtVerifier({ jwksUrl, issuer, audience }): JwtVerifier`, where `JwtVerifier = { verify(token: string): Promise<AuthContext> }`. Uses `jose.createRemoteJWKSet(url, { cacheMaxAge: 600_000, cooldownDuration: 30_000 })`, `algorithms: ['EdDSA']`, `clockTolerance: 30`. Any failure → `UnauthenticatedError()`.
   - `createLocalJwtVerifier({ jwks: JSONWebKeySet, issuer, audience }): JwtVerifier` (tests and gateway warm-up).
   - Middleware: `requireAuth(verifier)`, `optionalAuth(verifier)`, `requireRole(...roles: Role[])`, `requireSeller()` (role `artisan` + non-null `sellerId`, else `FORBIDDEN`), `requireVerifiedEmail()` (`EMAIL_NOT_VERIFIED`), `requireInternal(token: string)` (`X-Internal-Token`, compared with `crypto.timingSafeEqual` on equal-length buffers, else 401). `req.auth` is typed via declaration merging on `Express.Request`.
-  - Testing (`@craftoria/service-kit/testing`): `testKeys` (an Ed25519 pair generated once per process), `testJwks(): JSONWebKeySet`, `makeTestToken(claims?: Partial<AccessTokenClaims> & { expiresIn?: string }): Promise<string>` (defaults: random `sub`, `roles:['buyer']`, `emailVerified: true`, `iss`/`aud` defaults), `TEST_INTERNAL_TOKEN` (a 40-char constant).
+  - Testing (`@craftoria/service-kit/testing`): `testKeys(): Promise<{privateKey, jwks}>` (an Ed25519 pair generated once per process), `testJwks(): Promise<JSONWebKeySet>` (**async**: key generation is async in jose), `makeTestToken(claims?: Partial<AccessTokenClaims> & { expiresIn?: string }): Promise<string>` (defaults: random `sub`, `roles:['buyer']`, `emailVerified: true`, `iss`/`aud` defaults), `TEST_INTERNAL_TOKEN` (a 40-char constant).
 
 - [ ] **Step 1: Write failing tests:**
   ```ts
