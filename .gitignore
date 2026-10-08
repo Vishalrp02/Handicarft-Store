@@ -3,11 +3,8 @@
 # ==========================================
 
 # 1. Environment & Secret Credentials
-.env
-.env.*
 *.env
 *.env.*
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -56,7 +53,6 @@ Thumbs.db
 desktop.ini
 
 # 6. IDEs & Editors
-.vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea/
@@ -111,3 +107,4 @@ tmp/
 **/dist/
 .superpowers/
 *.dec.env
+config.bat
