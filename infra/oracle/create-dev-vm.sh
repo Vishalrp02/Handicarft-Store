@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Creates the Craftoria dev VM on Oracle Cloud Always Free with the OCI CLI.
+# FREE TIER ONLY: it creates only Always-Free-eligible resources and refuses to start if CPU, memory
+# or disk would go beyond the Always Free limits (4 OCPU / 24 GB RAM / 200 GB storage for Ampere A1).
 #
 # Best run in OCI Cloud Shell (console → top-right ">_" icon): already logged in, `oci` preinstalled.
 # Also works anywhere the OCI CLI is configured (`oci setup config`), e.g. Git Bash or WSL.
@@ -31,6 +33,7 @@ DRY_RUN=${DRY_RUN:-0}
 SHAPE=VM.Standard.A1.Flex
 FREE_A1_OCPUS=4
 FREE_A1_MEMORY_GB=24
+FREE_BLOCK_STORAGE_GB=200 # Always Free: boot + block volumes combined
 VCN_NAME=craftoria-vcn
 IGW_NAME=craftoria-igw
 SUBNET_NAME=craftoria-public
@@ -97,6 +100,25 @@ if [ -z "$existing_id" ]; then
   fi
 fi
 
+# boot volumes (per availability domain) + block volumes count toward the 200 GB Always Free storage
+ads=$(oci iam availability-domain list -c "$C" --query "join(' ', data[].name)" --raw-output)
+used_storage=0
+for ad in $ads; do
+  n=$(oci bv boot-volume list -c "$C" --availability-domain "$ad" --all     --query "sum(data[?\"lifecycle-state\"!='TERMINATED' && \"lifecycle-state\"!='TERMINATING'].\"size-in-gbs\")"     --raw-output 2>/dev/null || echo 0)
+  used_storage=$((used_storage + ${n%.*}))
+done
+n=$(oci bv volume list -c "$C" --all   --query "sum(data[?\"lifecycle-state\"!='TERMINATED' && \"lifecycle-state\"!='TERMINATING'].\"size-in-gbs\")"   --raw-output 2>/dev/null || echo 0)
+used_storage=$((used_storage + ${n%.*}))
+info "Block storage already in use: ${used_storage} GB of ${FREE_BLOCK_STORAGE_GB} GB"
+free_storage=$((FREE_BLOCK_STORAGE_GB - used_storage))
+if [ -z "$existing_id" ] && [ $((used_storage + BOOT_GB)) -gt $FREE_BLOCK_STORAGE_GB ]; then
+  if [ "$free_storage" -ge 47 ]; then
+    die "A ${BOOT_GB} GB boot disk would exceed the Always Free ${FREE_BLOCK_STORAGE_GB} GB storage. Nothing was created. Rerun with BOOT_GB=${free_storage}."
+  fi
+  die "Only ${free_storage} GB of Always Free storage is left (a boot disk needs at least 47 GB). Nothing was created. Delete unused boot/block volumes in the console first."
+fi
+[ "$BOOT_GB" -ge 47 ] || die "BOOT_GB must be at least 47 (Oracle's minimum boot volume)."
+
 # --- image --------------------------------------------------------------------------
 
 log "Finding the latest Canonical Ubuntu 24.04 image for $SHAPE (ARM)"
@@ -107,7 +129,6 @@ image_id=$(oci compute image list -c "$C" --operating-system "Canonical Ubuntu" 
 image_name=$(oci compute image get --image-id "$image_id" --query 'data."display-name"' --raw-output)
 info "$image_name"
 
-ads=$(oci iam availability-domain list -c "$C" --query "join(' ', data[].name)" --raw-output)
 info "Availability domains: $ads"
 
 if [ "$DRY_RUN" = "1" ]; then

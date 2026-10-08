@@ -14,9 +14,8 @@ You need: a debit/credit card (Oracle verifies it with a small refundable charge
    ⚠️ The home region **cannot be changed later**, and Always Free ARM servers only run in the home region.
 3. Verify the card. The charge is reversed.
 4. Wait for the "Your account is ready" email (minutes to a few hours), then sign in at **https://cloud.oracle.com**.
-5. **Recommended: upgrade to Pay As You Go.** Menu ☰ → **Billing & Cost Management** → **Upgrade and Manage Payment** → Pay As You Go.
-   Always Free resources stay **free**. The upgrade stops Oracle from reclaiming "idle" free servers, and makes ARM capacity much easier to get.
-6. Protect yourself from surprise bills: ☰ → **Billing & Cost Management** → **Budgets** → **Create Budget**, amount **₹100**, alert at **1 %** to your email.
+5. **Do NOT upgrade to Pay As You Go.** Craftoria uses the **Free Tier only** (decision D-8). New accounts start with a 30-day trial. After it ends, the account automatically limits itself to _Always Free_ resources and cannot charge your card. During the trial, create resources only with `create-dev-vm.sh`, which refuses anything beyond the Always Free limits.
+6. Extra safety net (optional, free): ☰ → **Billing & Cost Management** → **Budgets** → **Create Budget**, amount **₹100**, alert at **1 %** to your email.
 
 ## Part B (fast way): create everything with one script
 
@@ -53,7 +52,7 @@ Instead of clicking through Part B below, you can let [`create-dev-vm.sh`](creat
 7. **Show advanced options** → **Management** → **Paste cloud-init script** → paste the **entire contents** of [`infra/oracle/cloud-init.dev.yaml`](cloud-init.dev.yaml).
 8. **Create**. Wait until the state is **Running** (1–3 min). Copy the **Public IP address** from the instance page.
 
-> **"Out of capacity for shape VM.Standard.A1.Flex"?** That's common and not your fault. Try another **Availability Domain** in step 3 (if your region shows several), try again in a few hours, or start with **1 OCPU / 6 GB** and resize later (Instance → **Edit** → shape). The Pay As You Go upgrade (A5) helps a lot.
+> **"Out of capacity for shape VM.Standard.A1.Flex"?** That's common and not your fault. Try another **Availability Domain** in step 3 (if your region shows several), try again in a few hours, or start with **1 OCPU / 6 GB** and resize later (Instance → **Edit** → shape).
 
 ## Part C: Connect from Windows (PowerShell)
 
@@ -125,6 +124,12 @@ git config --global user.email "vishalrajpurohit02@gmail.com"
 | `permission denied ... docker.sock`            | Log out and back in (Part C step 4).                                                                                                                      |
 | `verify-dev-vm.sh` fails "cloud-init finished" | Wait: `cloud-init status --wait`. If it says `error`, run `sudo cat /var/log/cloud-init-output.log                                                        | tail -50` and send me the output. |
 | VS Code server install fails                   | F1 → **Remote-SSH: Kill VS Code Server on Host** → connect again.                                                                                         |
+
+## Staying on the free tier
+
+- Always Free covers: Ampere A1 up to **4 OCPU / 24 GB RAM** in total, **200 GB** of boot + block storage, **20 GB** Object Storage, and outbound data well beyond what we need. This VM uses 2 OCPU / 12 GB / 100 GB.
+- Never pick a shape or option the console doesn't mark **"Always Free-eligible"**.
+- Oracle may **stop Always Free VMs that stay idle** for about a week (very low CPU, network and memory use). Nothing is lost that matters: all code is on GitHub, and the VM can be recreated with `create-dev-vm.sh` in minutes. If it's stopped, start it again from the console (Instance → **Start**).
 
 ## Security notes
 

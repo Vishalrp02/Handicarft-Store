@@ -40,6 +40,7 @@ Branches are **stacked**: each one starts from the previous one, so the newest b
 | D-4 | Legacy app was not live; deleted |
 | D-6 | No legacy data migration (plan 13 skipped) |
 | D-7 | Development happens on an **Oracle dev VM** (2 OCPU / 12 GB) via VS Code Remote-SSH; the laptop is too weak for Docker. Prod later gets the other 2 OCPU / 12 GB |
+| D-8 | **Free tier only, strictly.** No Pay-As-You-Go, no paid services. R2 → Oracle Object Storage; domain has a free fallback; every infra script must refuse to exceed Always Free limits |
 | Git author | Keep `Vishal <vishalrajpurohit02@gmail.com>` |
 
 ## Still open (ask the owner)
@@ -56,7 +57,8 @@ Branches are **stacked**: each one starts from the previous one, so the newest b
 5. **Never touch `services/cart/`**: the owner writes it.
 6. **Never commit to `main`.** One branch per task: `feat/<plan>-<task>-<slug>`.
 7. **Spec gaps or bugs found while building:** fix them in `docs/architecture/03-*` (and the affected plans) in the same commit, and mention them in the report.
-8. **Reports are plain-language:** what was built, what it means for the product, issues hit, what's next.
+8. **Free tier only (D-8).** Never propose, create or configure anything that can cost money. If something in a plan isn't free, stop and flag it with a free alternative.
+9. **Reports are plain-language:** what was built, what it means for the product, issues hit, what's next.
 
 ## Environment notes
 

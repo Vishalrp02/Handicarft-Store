@@ -215,14 +215,14 @@ pending ──(order cancelled)──▶ cancelled
 | Ingress | **Cloudflare Tunnel** (`cloudflared` container). No public inbound ports; SSH only via **Tailscale** | ₹0 |
 | DNS, CDN, WAF | Cloudflare free | ₹0 |
 | Static hosting | Cloudflare Pages (console SPA) | ₹0 |
-| Object storage | Cloudflare R2 (10 GB free, zero egress): buckets `craftoria-media`, `craftoria-backups` | ₹0 within the free tier |
+| Object storage | **Oracle Object Storage** (Always Free 20 GB, S3-compatible): buckets `craftoria-media`, `craftoria-backups` (decision D-8 replaced Cloudflare R2, which needs a payment method) | ₹0 |
 | Database | Postgres 17 container on the VM, data on the boot/block volume; nightly encrypted `pg_dump` → R2, kept 7 daily / 4 weekly / 6 monthly; restore tested weekly | ₹0 |
 | Email | Resend free (3,000/month, 100/day) behind an `EmailProvider` interface | ₹0 |
 | Observability | Grafana Cloud free (logs, metrics, traces via Grafana Alloy), Sentry free, UptimeRobot free | ₹0 |
 | CI/CD | GitHub Actions; images in GHCR; arm64 builds (see decision D-1) | ₹0 |
-| Domain | `.in` domain | ~₹800/year |
+| Domain | `.in` domain, **or** a free subdomain (DuckDNS) + Let's Encrypt if the owner doesn't buy one (D-2, D-8) | ~₹800/year, or ₹0 |
 
-¹ Oracle caveats the plan handles: (a) idle Always Free instances can be reclaimed; **upgrade the account to Pay-As-You-Go** (Always Free resources stay free) to prevent it and to get better A1 capacity; (b) A1 capacity is sometimes unavailable in popular regions, so retry or pick a less busy home region at sign-up (the home region can't be changed later); (c) backups go to **Cloudflare R2, a different provider**, so losing the Oracle account doesn't lose data.
+¹ Oracle caveats the plan handles: (a) idle Always Free instances can be stopped (reclaimed). The account stays on the **Free Tier only** (decision D-8, no Pay-As-You-Go), so we accept this: prod gets real traffic (not idle), the dev VM is recreated by script if needed, and all code lives on GitHub; (b) A1 capacity is sometimes unavailable in popular regions, so retry or pick a less busy home region at sign-up (the home region can't be changed later); (c) backups go to **Cloudflare R2, a different provider**, so losing the Oracle account doesn't lose data.
 
 Deploy model: GitHub Actions → build and push images → SSH via Tailscale → `docker compose pull` → run each service's migrate container → `docker compose up -d --wait` → smoke check → automatic rollback to the previous image tags if the smoke check fails. Expect a few seconds of blip per restarted container; zero-downtime rollouts are a later improvement.
 
@@ -253,3 +253,4 @@ Deploy model: GitHub Actions → build and push images → SSH via Tailscale →
 | D-6 | Does the legacy MongoDB hold real data worth migrating? | **Answered 2026-10-07: no.** Old data is deleted, plan 13 is skipped, v2 launches with an empty database |
 | D-5 | Transactional email sender domain (needs DNS SPF/DKIM on the real domain) | `no-reply@craftoria.in` |
 | D-7 | Where does development run? | **Answered 2026-10-08:** on an Oracle `dev` VM via VS Code Remote-SSH (the laptop is too weak for Docker). Guide: `infra/oracle/DEV-VM-SETUP.md` |
+| D-8 | Free tier only? | **Answered 2026-10-08: yes, strictly.** No Pay-As-You-Go, no paid services. Consequences: (1) Cloudflare R2 needs a payment method, so media and backups move to **Oracle Object Storage** (20 GB Always Free, S3-compatible API, so no code change; applied when Plan 14 runs); (2) the domain (~₹800/year) is the one non-free item, with a free fallback of a free subdomain (e.g. DuckDNS) plus Let's Encrypt via Caddy instead of the Cloudflare Tunnel (decide at D-2); (3) every infra script refuses to exceed Always Free limits |
