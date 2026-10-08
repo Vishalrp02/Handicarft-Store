@@ -18,7 +18,29 @@ You need: a debit/credit card (Oracle verifies it with a small refundable charge
    Always Free resources stay **free**. The upgrade stops Oracle from reclaiming "idle" free servers, and makes ARM capacity much easier to get.
 6. Protect yourself from surprise bills: ☰ → **Billing & Cost Management** → **Budgets** → **Create Budget**, amount **₹100**, alert at **1 %** to your email.
 
-## Part B: Create the VM
+## Part B (fast way): create everything with one script
+
+Instead of clicking through Part B below, you can let [`create-dev-vm.sh`](create-dev-vm.sh) create the network and the VM.
+
+1. **Make an SSH key on your laptop** (PowerShell; press Enter twice for no passphrase, or set one):
+   ```powershell
+   mkdir $HOME\.ssh -Force
+   ssh-keygen -t ed25519 -f $HOME\.ssh\craftoria-dev -C craftoria-dev
+   Get-Content $HOME\.ssh\craftoria-dev.pub
+   ```
+   Copy the single line it prints (it starts with `ssh-ed25519`). That's the **public** key and is safe to share. Never copy the file without `.pub`.
+2. In the Oracle console, open **Cloud Shell**: the `>_` icon at the top right. A terminal opens in the browser, already logged in.
+3. Upload two files from this repo with Cloud Shell's **gear menu → Upload**: `infra/oracle/create-dev-vm.sh` and `infra/oracle/cloud-init.dev.yaml`. They land in your Cloud Shell home folder.
+4. Run, pasting your public key between the quotes:
+   ```bash
+   export SSH_PUBLIC_KEY="ssh-ed25519 AAAA...your key... craftoria-dev"
+   DRY_RUN=1 bash create-dev-vm.sh     # optional: shows the plan, creates nothing
+   bash create-dev-vm.sh
+   ```
+   It takes 2–5 minutes. If ARM capacity is busy, it tries every availability domain and then retries every 10 minutes for up to 2 hours. You can close the tab and rerun later; that's safe. It refuses to create anything beyond the Always Free limit.
+5. At the end it prints the **public IP** and the exact block for your `~\.ssh\config`. Add it, then go to **Part C step 3** (the key is already in the right place, so skip Part C steps 1–2).
+
+## Part B: Create the VM (manual, in the console)
 
 1. ☰ → **Compute** → **Instances** → **Create instance**.
 2. **Name:** `craftoria-dev`.
