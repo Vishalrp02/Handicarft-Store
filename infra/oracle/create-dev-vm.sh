@@ -15,8 +15,8 @@
 #   NAME             default: craftoria-dev
 #   OCPUS            default: 2          MEMORY_GB  default: 12       BOOT_GB default: 100
 #   CLOUD_INIT       default: cloud-init.dev.yaml next to this script
-#   RETRY_MINUTES    default: 10 (wait between "out of capacity" rounds)
-#   MAX_ROUNDS       default: 12 (12 × 10 min = 2 hours of retrying)
+#   RETRY_MINUTES    default: 5 (wait between "out of capacity" / "too many requests" rounds)
+#   MAX_ROUNDS       default: 24 (24 × 5 min = 2 hours of retrying)
 #   DRY_RUN=1        only look things up and print the plan; create nothing
 #
 # Safe to re-run: existing network pieces and an existing instance with the same name are reused.
@@ -27,8 +27,8 @@ NAME=${NAME:-craftoria-dev}
 OCPUS=${OCPUS:-2}
 MEMORY_GB=${MEMORY_GB:-12}
 BOOT_GB=${BOOT_GB:-100}
-RETRY_MINUTES=${RETRY_MINUTES:-10}
-MAX_ROUNDS=${MAX_ROUNDS:-12}
+RETRY_MINUTES=${RETRY_MINUTES:-5}
+MAX_ROUNDS=${MAX_ROUNDS:-24}
 DRY_RUN=${DRY_RUN:-0}
 SHAPE=VM.Standard.A1.Flex
 FREE_A1_OCPUS=4
@@ -105,10 +105,12 @@ ads=$(oci iam availability-domain list -c "$C" --query "join(' ', data[].name)" 
 used_storage=0
 for ad in $ads; do
   n=$(oci bv boot-volume list -c "$C" --availability-domain "$ad" --all     --query "sum(data[?\"lifecycle-state\"!='TERMINATED' && \"lifecycle-state\"!='TERMINATING'].\"size-in-gbs\")"     --raw-output 2>/dev/null || echo 0)
-  used_storage=$((used_storage + ${n%.*}))
+  n=${n%.*}
+  used_storage=$((used_storage + ${n:-0}))
 done
 n=$(oci bv volume list -c "$C" --all   --query "sum(data[?\"lifecycle-state\"!='TERMINATED' && \"lifecycle-state\"!='TERMINATING'].\"size-in-gbs\")"   --raw-output 2>/dev/null || echo 0)
-used_storage=$((used_storage + ${n%.*}))
+n=${n%.*}
+used_storage=$((used_storage + ${n:-0}))
 info "Block storage already in use: ${used_storage} GB of ${FREE_BLOCK_STORAGE_GB} GB"
 free_storage=$((FREE_BLOCK_STORAGE_GB - used_storage))
 if [ -z "$existing_id" ] && [ $((used_storage + BOOT_GB)) -gt $FREE_BLOCK_STORAGE_GB ]; then
@@ -205,15 +207,15 @@ else
         instance_id=$(printf '%s\n' "$out" | grep -o 'ocid1\.instance[^" ]*' | tail -n1)
         break 2
       fi
-      if printf '%s' "$out" | grep -qiE 'out of (host )?capacity|InternalError'; then
-        info "out of capacity in $ad"
+      if printf '%s' "$out" | grep -qiE 'out of (host )?capacity|InternalError|TooManyRequests|"status": 429'; then
+        info "no free ARM capacity in $ad right now (Oracle says busy); will retry"
         continue
       fi
       printf '%s\n' "$out" >&2
       die "Launch failed for a reason other than capacity (see above). Nothing else was changed."
     done
     if [ "$round" -lt "$MAX_ROUNDS" ]; then
-      info "No capacity anywhere right now. Waiting $RETRY_MINUTES minutes (Ctrl+C to stop; rerun later is safe)."
+      info "No capacity anywhere right now. Waiting $RETRY_MINUTES minutes ($(date '+%H:%M') now; Ctrl+C to stop, rerunning later is safe)."
       sleep $((RETRY_MINUTES * 60))
     fi
   done
